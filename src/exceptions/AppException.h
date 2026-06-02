@@ -1,6 +1,10 @@
 #pragma once
 #include <stdexcept>
-class AppException : std::exception
-{
+#include <string>
 
+class AppException : public std::runtime_error
+{
+public:
+	explicit AppException(const std::string& message);
+	virtual ~AppException() = default;
 };
