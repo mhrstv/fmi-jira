@@ -1,6 +1,6 @@
 #include "Date.h"
 #include <string>
-#include "../exceptions/AppException.h"
+#include "../exceptions/ValidationException.h"
 
 Date::Date() : Date(1, 1, 2026) {}
 
@@ -8,15 +8,15 @@ Date::Date(int day, int month, int year)
 {
     if (month < 1 || month > 12)
     {
-        throw std::invalid_argument("Invalid month.");
+        throw ValidationException("Invalid month.");
     }
     if (day < 1 || day > 31)
     {
-        throw std::invalid_argument("Invalid day.");
+        throw ValidationException("Invalid day.");
     }
     if (year < 0)
     {
-        throw std::invalid_argument("Invalid year.");
+        throw ValidationException("Invalid year.");
     }
 
     this->day = day;
@@ -67,7 +67,7 @@ Date Date::parse(const std::string& str)
 {
     if (str.size() != 10)
     {
-        throw std::invalid_argument("Invalid date format.");
+        throw ValidationException("Invalid date format.");
     }
     if (str[2] != '/' || str[5] != '/')
     {
