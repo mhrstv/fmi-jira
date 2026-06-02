@@ -4,6 +4,7 @@
 #include "../users/Lecturer.h"
 #include "../users/Administrator.h"
 #include "../exceptions/ValidationException.h"
+#include "../exceptions/StateException.h"
 
 std::unique_ptr<User> UserFactory::createUser(const std::string& username, const std::string& password, Role role)
 {
@@ -16,7 +17,7 @@ std::unique_ptr<User> UserFactory::createUser(const std::string& username, const
 	case Role::Lecturer:
 		return std::make_unique<Lecturer>(username, password);
 	case Role::Administrator:
-		return std::make_unique<Administrator>(username, password);
+		throw StateException("Cannot create Administrator through factory.");
 	default:
 		throw ValidationException("Unknown role.");
 	}
