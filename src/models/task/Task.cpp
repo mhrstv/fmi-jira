@@ -5,9 +5,9 @@
 
 size_t Task::idGen = 100;
 
-Task::Task(const std::string& title, const std::string& description, TaskType type, TaskPriority priority, const Date& deadline)
+Task::Task(const std::string& title, const std::string& description, TaskType type, TaskPriority priority)
 	: id(++idGen), title(title), description(description), type(type), priority(priority),
-	  status(TaskStatus::ToDo), assignee(nullptr), deadline(deadline), points(0), grade(0.0), approved(false)
+	  status(TaskStatus::ToDo), assignee(nullptr), deadline(), points(0), grade(0.0), approved(false)
 {
 	if (title.empty())
 	{
@@ -17,7 +17,7 @@ Task::Task(const std::string& title, const std::string& description, TaskType ty
 	{
 		throw ValidationException("Task description cannot be empty.");
 	}
-	changeHistory.push_back("Task " + getFormattedId() + " created.");
+	changeHistory.emplace_back(nullptr, "task", "", "created " + getFormattedId(), Date());
 }
 
 size_t Task::getId() const
@@ -90,73 +90,68 @@ const std::vector<std::string>& Task::getTags() const
 	return tags;
 }
 
-const std::vector<std::string>& Task::getChangeHistory() const
+const std::vector<HistoryEntry>& Task::getChangeHistory() const
 {
 	return changeHistory;
 }
 
-void Task::setTitle(const std::string& title)
+void Task::setTitle(const std::string& title, const User* changedBy, const Date& timestamp)
 {
 	if (title.empty())
 	{
 		throw ValidationException("Task title cannot be empty.");
 	}
-	changeHistory.push_back("Title changed from '" + this->title + "' to '" + title + "'.");
+	changeHistory.emplace_back(changedBy, "title", this->title, title, timestamp);
 	this->title = title;
 }
 
-void Task::setDescription(const std::string& description)
+void Task::setDescription(const std::string& description, const User* changedBy, const Date& timestamp)
 {
 	if (description.empty())
 	{
 		throw ValidationException("Task description cannot be empty.");
 	}
-	changeHistory.push_back("Description updated.");
+	changeHistory.emplace_back(changedBy, "description", this->description, description, timestamp);
 	this->description = description;
 }
 
-void Task::setPriority(TaskPriority priority)
+void Task::setPriority(TaskPriority priority, const User* changedBy, const Date& timestamp)
 {
-	changeHistory.push_back("Priority changed from " + priorityToString(this->priority) + " to " + priorityToString(priority) + ".");
+	changeHistory.emplace_back(changedBy, "priority", priorityToString(this->priority), priorityToString(priority), timestamp);
 	this->priority = priority;
 }
 
-void Task::setStatus(TaskStatus status)
+void Task::setStatus(TaskStatus status, const User* changedBy, const Date& timestamp)
 {
-	changeHistory.push_back("Status changed from " + statusToString(this->status) + " to " + statusToString(status) + ".");
+	changeHistory.emplace_back(changedBy, "status", statusToString(this->status), statusToString(status), timestamp);
 	this->status = status;
 }
 
-void Task::setAssignee(const User* user)
+void Task::setAssignee(const User* user, const User* changedBy, const Date& timestamp)
 {
-	if (user)
-	{
-		changeHistory.push_back("Assigned to " + user->getUsername() + ".");
-	}
-	else
-	{
-		changeHistory.push_back("Assignee removed.");
-	}
+	std::string oldVal = assignee ? assignee->getUsername() : "Unassigned";
+	std::string newVal = user ? user->getUsername() : "Unassigned";
+	changeHistory.emplace_back(changedBy, "assignee", oldVal, newVal, timestamp);
 	this->assignee = user;
 }
 
-void Task::setDeadline(const Date& deadline)
+void Task::setDeadline(const Date& deadline, const User* changedBy, const Date& timestamp)
 {
-	changeHistory.push_back("Deadline changed to " + deadline.toString() + ".");
+	changeHistory.emplace_back(changedBy, "deadline", this->deadline.toString(), deadline.toString(), timestamp);
 	this->deadline = deadline;
 }
 
-void Task::setPoints(int points)
+void Task::setPoints(int points, const User* changedBy, const Date& timestamp)
 {
 	if (points < 0)
 	{
 		throw ValidationException("Points cannot be negative.");
 	}
-	changeHistory.push_back("Points set to " + std::to_string(points) + ".");
+	changeHistory.emplace_back(changedBy, "points", std::to_string(this->points), std::to_string(points), timestamp);
 	this->points = points;
 }
 
-void Task::setGrade(double grade)
+void Task::setGrade(double grade, const User* changedBy, const Date& timestamp)
 {
 	if (grade < 2.0 || grade > 6.0)
 	{
@@ -166,26 +161,25 @@ void Task::setGrade(double grade)
 	{
 		throw StateException("Cannot grade a task that is not Done.");
 	}
-	changeHistory.push_back("Graded: " + std::to_string(grade) + ".");
+	changeHistory.emplace_back(changedBy, "grade", std::to_string(this->grade), std::to_string(grade), timestamp);
 	this->grade = grade;
 }
 
-void Task::setApproved(bool approved)
+void Task::setApproved(bool approved, const User* changedBy, const Date& timestamp)
 {
-	if (approved)
-	{
-		changeHistory.push_back("Task approved.");
-	}
+	std::string oldVal = this->approved ? "approved" : "not approved";
+	std::string newVal = approved ? "approved" : "not approved";
+	changeHistory.emplace_back(changedBy, "approval", oldVal, newVal, timestamp);
 	this->approved = approved;
 }
 
 void Task::addComment(const Comment& comment)
 {
-	changeHistory.push_back("Comment added by " + std::string(comment.getAuthor()->getUsername()) + ".");
+	changeHistory.emplace_back(comment.getAuthor(), "comments", "", "added comment", comment.getCreationDate());
 	comments.push_back(comment);
 }
 
-void Task::addTag(const std::string& tag)
+void Task::addTag(const std::string& tag, const User* changedBy, const Date& timestamp)
 {
 	if (tag.empty())
 	{
@@ -198,7 +192,7 @@ void Task::addTag(const std::string& tag)
 			throw ValidationException("Tag '" + tag + "' already exists.");
 		}
 	}
-	changeHistory.push_back("Tag '" + tag + "' added.");
+	changeHistory.emplace_back(changedBy, "tags", "", tag, timestamp);
 	tags.push_back(tag);
 }
 
@@ -206,15 +200,15 @@ std::string Task::typeToString(TaskType type)
 {
 	switch (type)
 	{
-		case TaskType::Bug:  
+		case TaskType::Bug:
 		    return "Bug";
-		case TaskType::Feature:  
+		case TaskType::Feature:
 		    return "Feature";
-		case TaskType::Task:    
+		case TaskType::Task:
 		    return "Task";
-		case TaskType::Improvement: 
+		case TaskType::Improvement:
 		    return "Improvement";
-		default:    
+		default:
 		    return "Unknown";
 	}
 }
@@ -223,15 +217,15 @@ std::string Task::priorityToString(TaskPriority priority)
 {
 	switch (priority)
 	{
-		case TaskPriority::Low:      
+		case TaskPriority::Low:
 		    return "Low";
-		case TaskPriority::Medium:   
+		case TaskPriority::Medium:
 		    return "Medium";
-		case TaskPriority::High:     
+		case TaskPriority::High:
 		    return "High";
-		case TaskPriority::Critical: 
+		case TaskPriority::Critical:
 		    return "Critical";
-		default:                     
+		default:
 		    return "Unknown";
 	}
 }
@@ -240,54 +234,54 @@ std::string Task::statusToString(TaskStatus status)
 {
 	switch (status)
 	{
-		case TaskStatus::ToDo:       
+		case TaskStatus::ToDo:
 		    return "ToDo";
-		case TaskStatus::InProgress: 
+		case TaskStatus::InProgress:
 		    return "InProgress";
-		case TaskStatus::InReview:   
+		case TaskStatus::InReview:
 		    return "InReview";
-		case TaskStatus::Done:       
+		case TaskStatus::Done:
 		    return "Done";
-		default:                     
+		default:
 		    return "Unknown";
 	}
 }
 
 TaskType Task::parseType(const std::string& str)
 {
-	if (str == "Bug")  
+	if (str == "Bug")
 	    return TaskType::Bug;
-	if (str == "Feature")  
+	if (str == "Feature")
 	    return TaskType::Feature;
-	if (str == "Task")    
+	if (str == "Task")
 	    return TaskType::Task;
-	if (str == "Improvement") 
+	if (str == "Improvement")
 	    return TaskType::Improvement;
 	throw ValidationException("Unknown task type: " + str);
 }
 
 TaskPriority Task::parsePriority(const std::string& str)
 {
-	if (str == "Low")      
+	if (str == "Low")
 	    return TaskPriority::Low;
-	if (str == "Medium")   
+	if (str == "Medium")
 	    return TaskPriority::Medium;
-	if (str == "High")     
+	if (str == "High")
 	    return TaskPriority::High;
-	if (str == "Critical") 
+	if (str == "Critical")
 	    return TaskPriority::Critical;
 	throw ValidationException("Unknown task priority: " + str);
 }
 
 TaskStatus Task::parseStatus(const std::string& str)
 {
-	if (str == "ToDo")       
+	if (str == "ToDo")
 	    return TaskStatus::ToDo;
-	if (str == "InProgress") 
+	if (str == "InProgress")
 	    return TaskStatus::InProgress;
-	if (str == "InReview")   
+	if (str == "InReview")
 	    return TaskStatus::InReview;
-	if (str == "Done")       
+	if (str == "Done")
 	    return TaskStatus::Done;
 	throw ValidationException("Unknown task status: " + str);
 }

@@ -7,6 +7,7 @@
 #include "../../enums/TaskType.h"
 #include "../../utils/Date.h"
 #include "../comment/Comment.h"
+#include "../task/HistoryEntry.h"
 
 class User;
 
@@ -27,10 +28,10 @@ class Task
 	bool approved;
 	std::vector<Comment> comments;
 	std::vector<std::string> tags;
-	std::vector<std::string> changeHistory;
+	std::vector<HistoryEntry> changeHistory;
 
 public:
-	Task(const std::string& title, const std::string& description, TaskType type, TaskPriority priority, const Date& deadline);
+	Task(const std::string& title, const std::string& description, TaskType type, TaskPriority priority);
 
 	size_t getId() const;
 	std::string getFormattedId() const;
@@ -46,20 +47,20 @@ public:
 	bool isApproved() const;
 	const std::vector<Comment>& getComments() const;
 	const std::vector<std::string>& getTags() const;
-	const std::vector<std::string>& getChangeHistory() const;
+	const std::vector<HistoryEntry>& getChangeHistory() const;
 
-	void setTitle(const std::string& title);
-	void setDescription(const std::string& description);
-	void setPriority(TaskPriority priority);
-	void setStatus(TaskStatus status);
-	void setAssignee(const User* user);
-	void setDeadline(const Date& deadline);
-	void setPoints(int points);
-	void setGrade(double grade);
-	void setApproved(bool approved);
+	void setTitle(const std::string& title, const User* changedBy, const Date& timestamp);
+	void setDescription(const std::string& description, const User* changedBy, const Date& timestamp);
+	void setPriority(TaskPriority priority, const User* changedBy, const Date& timestamp);
+	void setStatus(TaskStatus status, const User* changedBy, const Date& timestamp);
+	void setAssignee(const User* user, const User* changedBy, const Date& timestamp);
+	void setDeadline(const Date& deadline, const User* changedBy, const Date& timestamp);
+	void setPoints(int points, const User* changedBy, const Date& timestamp);
+	void setGrade(double grade, const User* changedBy, const Date& timestamp);
+	void setApproved(bool approved, const User* changedBy, const Date& timestamp);
 
 	void addComment(const Comment& comment);
-	void addTag(const std::string& tag);
+	void addTag(const std::string& tag, const User* changedBy, const Date& timestamp);
 
 	static std::string typeToString(TaskType type);
 	static std::string priorityToString(TaskPriority priority);
