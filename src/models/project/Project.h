@@ -20,6 +20,7 @@ class Project
 
 public:
 	Project(const std::string& name, const std::string& description = "");
+	~Project();
 
 	const std::string& getName() const;
 	const std::string& getDescription() const;

@@ -15,6 +15,8 @@ Project::Project(const std::string& name, const std::string& description) : name
 	}
 }
 
+Project::~Project() = default;
+
 const std::string& Project::getName() const
 {
 	return name;
