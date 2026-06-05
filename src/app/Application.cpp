@@ -17,6 +17,18 @@ Application::Application()
 	registerCommands();
 }
 
+#include "../commands/CreateTaskCommand.h"
+#include "../commands/AssignTaskCommand.h"
+#include "../commands/ChangeStatusCommand.h"
+#include "../commands/AddCommentCommand.h"
+#include "../commands/AddTagCommand.h"
+#include "../commands/ListProjectsCommand.h"
+#include "../commands/ListTasksCommand.h"
+#include "../commands/MyTasksCommand.h"
+#include "../commands/UpcomingTasksCommand.h"
+#include "../commands/SearchTasksCommand.h"
+#include "../commands/FilterTasksCommand.h"
+
 void Application::registerCommands()
 {
 	dispatcher.registerCommand(std::make_unique<LoginCommand>());
@@ -29,6 +41,18 @@ void Application::registerCommands()
 	dispatcher.registerCommand(std::make_unique<ArchiveProjectCommand>());
 	dispatcher.registerCommand(std::make_unique<JoinProjectCommand>());
 	dispatcher.registerCommand(std::make_unique<AddUserToProjectCommand>());
+	
+	dispatcher.registerCommand(std::make_unique<CreateTaskCommand>());
+	dispatcher.registerCommand(std::make_unique<AssignTaskCommand>());
+	dispatcher.registerCommand(std::make_unique<ChangeStatusCommand>());
+	dispatcher.registerCommand(std::make_unique<AddCommentCommand>());
+	dispatcher.registerCommand(std::make_unique<AddTagCommand>());
+	dispatcher.registerCommand(std::make_unique<ListProjectsCommand>());
+	dispatcher.registerCommand(std::make_unique<ListTasksCommand>());
+	dispatcher.registerCommand(std::make_unique<MyTasksCommand>());
+	dispatcher.registerCommand(std::make_unique<UpcomingTasksCommand>());
+	dispatcher.registerCommand(std::make_unique<SearchTasksCommand>());
+	dispatcher.registerCommand(std::make_unique<FilterTasksCommand>());
 }
 
 void Application::run()
