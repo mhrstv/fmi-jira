@@ -75,6 +75,11 @@ const std::vector<std::unique_ptr<User>>& AppData::getUsers() const
 	return users;
 }
 
+std::istream& AppData::in()
+{
+	return std::cin;
+}
+
 std::ostream& AppData::out()
 {
 	return std::cout;
