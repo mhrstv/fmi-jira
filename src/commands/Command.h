@@ -16,6 +16,6 @@ public:
 	const std::string& getName() const;
 	const std::string& getDescription() const;
 
-	virtual void execute(const std::vector<std::string>& args, AppData& context) = 0;
+	virtual void execute(const std::vector<std::string>& args, AppData& data) = 0;
 	virtual bool requiresLogin() const;
 };
