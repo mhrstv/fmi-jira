@@ -1,5 +1,8 @@
-#include <iostream>
+#include "app/Application.h"
 
-int main() {
-    return 0;
+int main()
+{
+	Application app;
+	app.run();
+	return 0;
 }
