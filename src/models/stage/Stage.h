@@ -16,6 +16,15 @@ class Stage
 	StageStatus status;
 
 public:
+	class Iterator {
+		const std::vector<Task*>& tasksRef;
+		size_t index;
+	public:
+		Iterator(const std::vector<Task*>& tasks) : tasksRef(tasks), index(0) {}
+		bool hasNext() const { return index < tasksRef.size(); }
+		Task* next() { return tasksRef[index++]; }
+	};
+
 	Stage(const std::string& name);
 
 	const std::string& getName() const;
@@ -23,6 +32,7 @@ public:
 	const Date& getEndDate() const;
 	StageStatus getStatus() const;
 	const std::vector<Task*>& getTasks() const;
+	Iterator getIterator() const { return Iterator(tasks); }
 
 	void start(const Date& startDate);
 	void finish(const Date& endDate);
