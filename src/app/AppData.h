@@ -30,6 +30,6 @@ public:
 	const std::vector<std::unique_ptr<Project>>& getProjects() const;
 	const std::vector<std::unique_ptr<User>>& getUsers() const;
 
-	std::istream& in();
-	std::ostream& out();
+	std::istream& is();
+	std::ostream& os();
 };
