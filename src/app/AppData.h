@@ -32,4 +32,7 @@ public:
 
 	std::istream& is();
 	std::ostream& os();
+
+	void save() const;
+	void load();
 };

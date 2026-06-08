@@ -7,6 +7,8 @@
 #include "../commands/general/HelpCommand.h"
 #include "../commands/general/CloseCommand.h"
 #include "../commands/general/ViewProfileCommand.h"
+#include "../commands/general/SaveCommand.h"
+#include "../commands/general/LoadCommand.h"
 #include "../commands/admin/RegisterCommand.h"
 #include "../commands/admin/CreateProjectCommand.h"
 #include "../commands/admin/ArchiveProjectCommand.h"
@@ -40,6 +42,7 @@
 
 Application::Application()
 {
+	data.load();
 	registerCommands();
 }
 
@@ -50,6 +53,8 @@ void Application::registerCommands()
 	dispatcher.registerCommand(std::make_unique<HelpCommand>());
 	dispatcher.registerCommand(std::make_unique<CloseCommand>());
 	dispatcher.registerCommand(std::make_unique<ViewProfileCommand>());
+	dispatcher.registerCommand(std::make_unique<SaveCommand>());
+	dispatcher.registerCommand(std::make_unique<LoadCommand>());
 	dispatcher.registerCommand(std::make_unique<RegisterCommand>());
 	dispatcher.registerCommand(std::make_unique<CreateProjectCommand>());
 	dispatcher.registerCommand(std::make_unique<ArchiveProjectCommand>());
