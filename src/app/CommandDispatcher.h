@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "../commands/Command.h"
+#include "../commands/base/Command.h"
 
 class AppData;
 
