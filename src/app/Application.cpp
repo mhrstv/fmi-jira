@@ -1,33 +1,47 @@
 #include "Application.h"
-#include "../commands/LoginCommand.h"
-#include "../commands/LogoutCommand.h"
-#include "../commands/HelpCommand.h"
-#include "../commands/CloseCommand.h"
-#include "../commands/ViewProfileCommand.h"
-#include "../commands/RegisterCommand.h"
-#include "../commands/CreateProjectCommand.h"
-#include "../commands/ArchiveProjectCommand.h"
-#include "../commands/JoinProjectCommand.h"
-#include "../commands/AddUserToProjectCommand.h"
 #include <iostream>
 #include <string>
+
+#include "../commands/general/LoginCommand.h"
+#include "../commands/general/LogoutCommand.h"
+#include "../commands/general/HelpCommand.h"
+#include "../commands/general/CloseCommand.h"
+#include "../commands/general/ViewProfileCommand.h"
+#include "../commands/admin/RegisterCommand.h"
+#include "../commands/admin/CreateProjectCommand.h"
+#include "../commands/admin/ArchiveProjectCommand.h"
+#include "../commands/student/JoinProjectCommand.h"
+#include "../commands/admin/AddUserToProjectCommand.h"
+
+#include "../commands/student/CreateTaskCommand.h"
+#include "../commands/student/AssignTaskCommand.h"
+#include "../commands/student/ChangeStatusCommand.h"
+#include "../commands/student/AddCommentCommand.h"
+#include "../commands/student/AddTagCommand.h"
+#include "../commands/student/ListProjectsCommand.h"
+#include "../commands/student/ListTasksCommand.h"
+#include "../commands/student/MyTasksCommand.h"
+#include "../commands/student/UpcomingTasksCommand.h"
+#include "../commands/student/SearchTasksCommand.h"
+#include "../commands/student/FilterTasksCommand.h"
+
+#include "../commands/ta/ApproveTaskCommand.h"
+#include "../commands/ta/ReviewTaskCommand.h"
+#include "../commands/ta/StartStageCommand.h"
+#include "../commands/ta/FinishStageCommand.h"
+#include "../commands/ta/StageReportCommand.h"
+#include "../commands/ta/MoveTaskToStageCommand.h"
+
+#include "../commands/lecturer/ListAllProjectsCommand.h"
+#include "../commands/lecturer/ListAllTasksCommand.h"
+#include "../commands/lecturer/GradeTaskCommand.h"
+#include "../commands/lecturer/StudentReportCommand.h"
+#include "../commands/lecturer/FinalizeProjectCommand.h"
 
 Application::Application()
 {
 	registerCommands();
 }
-
-#include "../commands/CreateTaskCommand.h"
-#include "../commands/AssignTaskCommand.h"
-#include "../commands/ChangeStatusCommand.h"
-#include "../commands/AddCommentCommand.h"
-#include "../commands/AddTagCommand.h"
-#include "../commands/ListProjectsCommand.h"
-#include "../commands/ListTasksCommand.h"
-#include "../commands/MyTasksCommand.h"
-#include "../commands/UpcomingTasksCommand.h"
-#include "../commands/SearchTasksCommand.h"
-#include "../commands/FilterTasksCommand.h"
 
 void Application::registerCommands()
 {
@@ -51,6 +65,20 @@ void Application::registerCommands()
 	dispatcher.registerCommand(std::make_unique<ListTasksCommand>());
 	dispatcher.registerCommand(std::make_unique<MyTasksCommand>());
 	dispatcher.registerCommand(std::make_unique<UpcomingTasksCommand>());
+
+	dispatcher.registerCommand(std::make_unique<ApproveTaskCommand>());
+	dispatcher.registerCommand(std::make_unique<ReviewTaskCommand>());
+	dispatcher.registerCommand(std::make_unique<StartStageCommand>());
+	dispatcher.registerCommand(std::make_unique<FinishStageCommand>());
+	dispatcher.registerCommand(std::make_unique<StageReportCommand>());
+	dispatcher.registerCommand(std::make_unique<MoveTaskToStageCommand>());
+
+	dispatcher.registerCommand(std::make_unique<ListAllProjectsCommand>());
+	dispatcher.registerCommand(std::make_unique<ListAllTasksCommand>());
+	dispatcher.registerCommand(std::make_unique<GradeTaskCommand>());
+	dispatcher.registerCommand(std::make_unique<StudentReportCommand>());
+	dispatcher.registerCommand(std::make_unique<FinalizeProjectCommand>());
+
 	dispatcher.registerCommand(std::make_unique<SearchTasksCommand>());
 	dispatcher.registerCommand(std::make_unique<FilterTasksCommand>());
 }
