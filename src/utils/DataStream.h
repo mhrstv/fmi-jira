@@ -4,7 +4,10 @@
 
 namespace DataStream
 {
+	// Saves a string
 	void writeString(std::ostream& os, const std::string& str);
+	
+	// Loads a string
 	std::string readString(std::istream& is);
 
 	void writeInt(std::ostream& os, int val);

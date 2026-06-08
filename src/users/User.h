@@ -20,7 +20,11 @@ public:
 	virtual std::unique_ptr<User> clone() const = 0;
 
 	virtual void save(std::ostream& os) const;
+	
+	// Loads extra data specific to the user type
 	virtual void loadSubclass(std::istream& is) {}
+	
+	// Creates the right user type from the file data
 	static std::unique_ptr<User> loadPoly(std::istream& is);
 
 	size_t getId() const;

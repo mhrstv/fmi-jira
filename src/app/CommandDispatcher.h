@@ -12,6 +12,9 @@ class CommandDispatcher
 
 public:
 	void registerCommand(std::unique_ptr<Command> command);
+	
+	// Executes a command from the user's text input
 	void dispatch(const std::string& input, AppData& data);
+	
 	void printHelp(std::ostream& os) const;
 };

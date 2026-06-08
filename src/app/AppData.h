@@ -33,6 +33,9 @@ public:
 	std::istream& is();
 	std::ostream& os();
 
+	// Saves all data to files (located in the ./data/ directory)
 	void save() const;
+	
+	// Loads all data from files (located in the ./data/ directory)
 	void load();
 };

@@ -42,12 +42,17 @@ public:
 
 	Task* addTask(std::unique_ptr<Task> task);
 	Task* findTask(size_t taskId) const;
+	
+	// Finds a task using its full name (ex. 'PROJ-12')
 	Task* findTaskByFormattedId(const std::string& formattedId) const;
 
 	Stage* addStage(std::unique_ptr<Stage> stage);
 	Stage* findStage(const std::string& stageName) const;
 
+	// Changes project status to 'Finished'
 	void finalize();
+	
+	// Changes project status to 'Finished' (archives it)
 	void archive();
 
 	static std::string statusToString(ProjectStatus status);
