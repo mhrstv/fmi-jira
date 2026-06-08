@@ -42,20 +42,27 @@ void StudentReportCommand::execute(const std::vector<std::string>& args, AppData
 	{
 		throw ValidationException("User '" + studentName + "' is not a student.");
 	}
-	data.os() << "Completed tasks: " << student->getCompletedTasks() << "\n";
-	
+	int completed = 0;
+	int score = 0;
 	double totalGrade = 0.0;
 	int gradedTasks = 0;
 	for (const auto& project : data.getProjects()) {
 		for (const auto& task : project->getTasks()) {
-			if (task->getAssignee() == student && task->getGrade() > 0.0) {
-				totalGrade += task->getGrade();
-				gradedTasks++;
+			if (task->getAssignee() == student) {
+				if (task->getStatus() == TaskStatus::Done) {
+					completed++;
+					score += 10;
+				}
+				if (task->getGrade() > 0.0) {
+					totalGrade += task->getGrade();
+					gradedTasks++;
+				}
 			}
 		}
 	}
 	double avgGrade = gradedTasks > 0 ? totalGrade / gradedTasks : 0.0;
 	
+	data.os() << "Completed tasks: " << completed << "\n";
 	data.os() << "Average grade: " << avgGrade << "\n";
-	data.os() << "Performance score: " << student->getPerformanceScore() << "\n";
+	data.os() << "Performance score: " << score << "\n";
 }
