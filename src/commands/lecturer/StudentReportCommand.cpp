@@ -4,6 +4,8 @@
 #include "../../exceptions/PermissionException.h"
 #include "../../exceptions/NotFoundException.h"
 #include "../../users/Student.h"
+#include "../../models/project/Project.h"
+#include "../../models/task/Task.h"
 
 StudentReportCommand::StudentReportCommand() : Command("student-report", "Generate a report for a student") { }
 
@@ -40,7 +42,20 @@ void StudentReportCommand::execute(const std::vector<std::string>& args, AppData
 	{
 		throw ValidationException("User '" + studentName + "' is not a student.");
 	}
-	data.os() << "--- Student Report: " << student->getUsername() << " ---\n";
 	data.os() << "Completed tasks: " << student->getCompletedTasks() << "\n";
-	data.os() << "In-Progress tasks: " << student->getInProgressTasks() << "\n";
+	
+	double totalGrade = 0.0;
+	int gradedTasks = 0;
+	for (const auto& project : data.getProjects()) {
+		for (const auto& task : project->getTasks()) {
+			if (task->getAssignee() == student && task->getGrade() > 0.0) {
+				totalGrade += task->getGrade();
+				gradedTasks++;
+			}
+		}
+	}
+	double avgGrade = gradedTasks > 0 ? totalGrade / gradedTasks : 0.0;
+	
+	data.os() << "Average grade: " << avgGrade << "\n";
+	data.os() << "Performance score: " << student->getPerformanceScore() << "\n";
 }

@@ -45,5 +45,10 @@ void ChangeStatusCommand::execute(const std::vector<std::string>& args, AppData&
 	TaskStatus newStatus = Task::parseStatus(statusStr);
 	foundTask->setStatus(newStatus, currentUser, Date());
 
-	data.os() << "[System] Status updated successfully.\n";
+	if (newStatus == TaskStatus::Done) {
+		data.os() << "[System] Task marked as Done.\n";
+	} else {
+		data.os() << "[System] Status updated successfully.\n";
+	}
 }
+

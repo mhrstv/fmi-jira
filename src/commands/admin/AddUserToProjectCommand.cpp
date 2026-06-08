@@ -36,5 +36,6 @@ void AddUserToProjectCommand::execute(const std::vector<std::string>& args, AppD
 
 	project->addMember(userToAdd);
 
-	data.os() << "[System] User '" << username << "' added to project '" << projectName << "'.\n";
+	data.os() << "[System] " << username << " added to project " << projectName << ".\n";
 }
+

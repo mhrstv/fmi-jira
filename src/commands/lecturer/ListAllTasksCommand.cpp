@@ -22,12 +22,11 @@ void ListAllTasksCommand::execute(const std::vector<std::string>& args, AppData&
 		return;
 	}
 
-	data.os() << "--- All Tasks ---\n";
 	for (const auto& project : projects)
 	{
 		for (const auto& task : project->getTasks())
 		{
-			data.os() << *task << "\n";
+			data.os() << "- " << task->getFormattedId() << " | " << Task::statusToString(task->getStatus()) << " | " << Task::priorityToString(task->getPriority()) << "\n";
 		}
 	}
 }

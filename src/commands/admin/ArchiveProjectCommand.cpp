@@ -30,3 +30,4 @@ void ArchiveProjectCommand::execute(const std::vector<std::string>& args, AppDat
 	project->archive();
 	data.os() << "[System] Project '" << name << "' archived successfully.\n";
 }
+

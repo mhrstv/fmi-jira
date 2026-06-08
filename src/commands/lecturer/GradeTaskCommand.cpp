@@ -50,5 +50,6 @@ void GradeTaskCommand::execute(const std::vector<std::string>& args, AppData& da
 	}
 
 	foundTask->setGrade(grade, currentUser, Date());
-	data.os() << "[System] Task " << foundTask->getFormattedId() << " has been graded with " << grade << ".\n";
+	data.os() << "[System] Task graded successfully.\n";
 }
+

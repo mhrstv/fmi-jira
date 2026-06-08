@@ -44,20 +44,10 @@ void StageReportCommand::execute(const std::vector<std::string>& args, AppData& 
 		throw NotFoundException("Stage '" + stageName + "' not found in any of your projects.");
 	}
 
-	data.os() << "--- Stage: " << foundStage->getName() << " ---\n";
-	data.os() << "Tasks:\n";
-
-	Stage::Iterator it = foundStage->getIterator();
-	while (it.hasNext())
-	{
-		Task* task = it.next();
-		data.os() << "- " << task->getFormattedId() << " | " 
-				   << Task::statusToString(task->getStatus()) << " | " 
-				   << Task::priorityToString(task->getPriority()) << "\n";
-	}
 	int total = foundStage->getTotalTaskCount();
 	int completed = foundStage->getCompletedTaskCount();
-	double percentage = (total > 0) ? ((double)completed / total) * 100.0 : 0.0;
 
-	data.os() << "Completion: " << percentage << "%\n";
+	data.os() << "Stage: " << foundStage->getName() << "\n";
+	data.os() << "Tasks: " << total << "\n";
+	data.os() << "Completed: " << completed << "\n";
 }

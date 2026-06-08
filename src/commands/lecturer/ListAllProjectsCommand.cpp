@@ -21,9 +21,8 @@ void ListAllProjectsCommand::execute(const std::vector<std::string>& args, AppDa
 		return;
 	}
 
-	data.os() << "--- All Projects ---\n";
 	for (const auto& project : projects)
 	{
-		data.os() << *project << "\n";
+		data.os() << "- " << project->getName() << "\n";
 	}
 }

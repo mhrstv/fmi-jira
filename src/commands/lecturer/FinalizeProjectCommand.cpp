@@ -37,3 +37,4 @@ void FinalizeProjectCommand::execute(const std::vector<std::string>& args, AppDa
 	foundProject->finalize();
 	data.os() << "[System] Project " << foundProject->getName() << " has been finalized.\n";
 }
+
