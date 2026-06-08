@@ -19,6 +19,10 @@ public:
 
 	virtual std::unique_ptr<User> clone() const = 0;
 
+	virtual void save(std::ostream& os) const;
+	virtual void loadSubclass(std::istream& is) {}
+	static std::unique_ptr<User> loadPoly(std::istream& is);
+
 	size_t getId() const;
 	const std::string& getUsername() const;
 	Role getRole() const;

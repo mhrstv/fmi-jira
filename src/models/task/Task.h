@@ -1,15 +1,16 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <memory>
 #include <iostream>
 #include "../../enums/TaskPriority.h"
 #include "../../enums/TaskStatus.h"
 #include "../../enums/TaskType.h"
 #include "../../utils/Date.h"
 #include "../comment/Comment.h"
-#include "../task/HistoryEntry.h"
-
 class User;
+class AppData;
+#include "HistoryEntry.h"
 
 class Task
 {
@@ -32,6 +33,7 @@ class Task
 
 public:
 	Task(const std::string& title, const std::string& description, TaskType type, TaskPriority priority);
+	Task() = default;
 
 	size_t getId() const;
 	std::string getFormattedId() const;
@@ -61,6 +63,9 @@ public:
 
 	void addComment(const Comment& comment);
 	void addTag(const std::string& tag, const User* changedBy, const Date& timestamp);
+
+	void save(std::ostream& os) const;
+	static std::unique_ptr<Task> load(std::istream& is, const AppData& context);
 
 	static std::string typeToString(TaskType type);
 	static std::string priorityToString(TaskPriority priority);

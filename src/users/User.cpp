@@ -1,6 +1,8 @@
 #include "User.h"
 #include "../exceptions/ValidationException.h"
 #include "../exceptions/AuthException.h"
+#include "../utils/DataStream.h"
+#include "../factories/UserFactory.h"
 
 size_t User::idGen = 1000;
 
@@ -19,6 +21,30 @@ User::User(const std::string& username, const std::string& password, Role role) 
 size_t User::getId() const
 {
 	return id;
+}
+
+void User::save(std::ostream& os) const
+{
+	DataStream::writeSizeT(os, id);
+	DataStream::writeString(os, username);
+	DataStream::writeString(os, password);
+	DataStream::writeInt(os, static_cast<int>(role));
+}
+
+std::unique_ptr<User> User::loadPoly(std::istream& is)
+{
+	size_t id = DataStream::readSizeT(is);
+	std::string username = DataStream::readString(is);
+	std::string password = DataStream::readString(is);
+	Role role = static_cast<Role>(DataStream::readInt(is));
+
+	auto user = UserFactory::createUser(username, password, role);
+	
+	user->id = id;
+	if (id > idGen) idGen = id;
+
+	user->loadSubclass(is);
+	return user;
 }
 
 const std::string& User::getUsername() const

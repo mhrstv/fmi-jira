@@ -26,4 +26,8 @@ public:
 	void addPerformancePoints(double points);
 
 	void displayInfo(std::ostream& os) const override;
+
+	void save(std::ostream& os) const override;
+	void loadSubclass(std::istream& is) override;
 };
+

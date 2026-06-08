@@ -1,11 +1,13 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <memory>
 #include <iostream>
 #include "../../utils/Date.h"
 #include "../../enums/StageStatus.h"
 
 class Task;
+class AppData;
 
 class Stage
 {
@@ -26,6 +28,7 @@ public:
 	};
 
 	Stage(const std::string& name);
+	Stage() = default;
 
 	const std::string& getName() const;
 	const Date& getStartDate() const;
@@ -43,6 +46,9 @@ public:
 
 	int getTotalTaskCount() const;
 	int getCompletedTaskCount() const;
+
+	void save(std::ostream& os) const;
+	static std::unique_ptr<Stage> load(std::istream& is, const std::vector<std::unique_ptr<Task>>& projectTasks);
 
 	static std::string statusToString(StageStatus status);
 

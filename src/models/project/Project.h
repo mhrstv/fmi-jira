@@ -8,6 +8,7 @@
 class User;
 class Task;
 class Stage;
+class AppData;
 
 class Project
 {
@@ -28,6 +29,9 @@ public:
 	const std::vector<User*>& getMembers() const;
 	const std::vector<std::unique_ptr<Task>>& getTasks() const;
 	const std::vector<std::unique_ptr<Stage>>& getStages() const;
+
+	void save(std::ostream& os) const;
+	static std::unique_ptr<Project> load(std::istream& is, const AppData& context, std::vector<std::pair<std::string, std::unique_ptr<Task>>>& allTasks);
 
 	void setDescription(const std::string& description);
 

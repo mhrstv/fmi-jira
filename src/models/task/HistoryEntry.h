@@ -4,6 +4,7 @@
 #include "../../utils/Date.h"
 
 class User;
+class AppData;
 
 class HistoryEntry
 {
@@ -21,6 +22,9 @@ public:
 	const std::string& getOldValue() const;
 	const std::string& getNewValue() const;
 	const Date& getTimestamp() const;
+
+	void save(std::ostream& os) const;
+	static HistoryEntry load(std::istream& is, const AppData& context);
 
 	friend std::ostream& operator<<(std::ostream& os, const HistoryEntry& entry);
 };

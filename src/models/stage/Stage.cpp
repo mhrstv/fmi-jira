@@ -3,6 +3,7 @@
 #include "../../exceptions/ValidationException.h"
 #include "../../exceptions/StateException.h"
 #include "../../exceptions/NotFoundException.h"
+#include "../../utils/DataStream.h"
 #include "../../exceptions/DuplicateException.h"
 
 Stage::Stage(const std::string& name) : name(name), startDate(), endDate(), status(StageStatus::Planned)
@@ -112,6 +113,44 @@ int Stage::getCompletedTaskCount() const
 		}
 	}
 	return count;
+}
+
+void Stage::save(std::ostream& os) const
+{
+	DataStream::writeString(os, name);
+	DataStream::writeString(os, startDate.toString());
+	DataStream::writeString(os, endDate.toString());
+	DataStream::writeInt(os, static_cast<int>(status));
+
+	DataStream::writeSizeT(os, tasks.size());
+	for (Task* task : tasks)
+	{
+		DataStream::writeSizeT(os, task->getId());
+	}
+}
+
+std::unique_ptr<Stage> Stage::load(std::istream& is, const std::vector<std::unique_ptr<Task>>& projectTasks)
+{
+	auto stage = std::make_unique<Stage>();
+	stage->name = DataStream::readString(is);
+	stage->startDate = Date::parse(DataStream::readString(is));
+	stage->endDate = Date::parse(DataStream::readString(is));
+	stage->status = static_cast<StageStatus>(DataStream::readInt(is));
+
+	size_t tasksCount = DataStream::readSizeT(is);
+	for (size_t i = 0; i < tasksCount; i++)
+	{
+		size_t taskId = DataStream::readSizeT(is);
+		for (const auto& t : projectTasks)
+		{
+			if (t->getId() == taskId)
+			{
+				stage->tasks.push_back(t.get());
+				break;
+			}
+		}
+	}
+	return stage;
 }
 
 std::string Stage::statusToString(StageStatus status)

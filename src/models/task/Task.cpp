@@ -1,5 +1,7 @@
 #include "Task.h"
 #include "../../users/User.h"
+#include "../../app/AppData.h"
+#include "../../utils/DataStream.h"
 #include "../../exceptions/ValidationException.h"
 #include "../../exceptions/StateException.h"
 
@@ -194,6 +196,62 @@ void Task::addTag(const std::string& tag, const User* changedBy, const Date& tim
 	}
 	changeHistory.emplace_back(changedBy, "tags", "", tag, timestamp);
 	tags.push_back(tag);
+}
+
+void Task::save(std::ostream& os) const
+{
+	DataStream::writeSizeT(os, id);
+	DataStream::writeString(os, title);
+	DataStream::writeString(os, description);
+	DataStream::writeInt(os, static_cast<int>(type));
+	DataStream::writeInt(os, static_cast<int>(priority));
+	DataStream::writeInt(os, static_cast<int>(status));
+	DataStream::writeString(os, assignee ? assignee->getUsername() : "");
+	DataStream::writeString(os, deadline.toString());
+	DataStream::writeInt(os, points);
+	DataStream::writeDouble(os, grade);
+	DataStream::writeBool(os, approved);
+
+	DataStream::writeSizeT(os, comments.size());
+	for (const auto& c : comments) c.save(os);
+
+	DataStream::writeSizeT(os, tags.size());
+	for (const auto& t : tags) DataStream::writeString(os, t);
+
+	DataStream::writeSizeT(os, changeHistory.size());
+	for (const auto& h : changeHistory) h.save(os);
+}
+
+std::unique_ptr<Task> Task::load(std::istream& is, const AppData& context)
+{
+	auto task = std::make_unique<Task>();
+	task->id = DataStream::readSizeT(is);
+	if (task->id > idGen) idGen = task->id;
+
+	task->title = DataStream::readString(is);
+	task->description = DataStream::readString(is);
+	task->type = static_cast<TaskType>(DataStream::readInt(is));
+	task->priority = static_cast<TaskPriority>(DataStream::readInt(is));
+	task->status = static_cast<TaskStatus>(DataStream::readInt(is));
+	
+	std::string assigneeName = DataStream::readString(is);
+	task->assignee = assigneeName.empty() ? nullptr : context.findUser(assigneeName);
+	
+	task->deadline = Date::parse(DataStream::readString(is));
+	task->points = DataStream::readInt(is);
+	task->grade = DataStream::readDouble(is);
+	task->approved = DataStream::readBool(is);
+
+	size_t commentsCount = DataStream::readSizeT(is);
+	for (size_t i = 0; i < commentsCount; i++) task->comments.push_back(Comment::load(is, context));
+
+	size_t tagsCount = DataStream::readSizeT(is);
+	for (size_t i = 0; i < tagsCount; i++) task->tags.push_back(DataStream::readString(is));
+
+	size_t historyCount = DataStream::readSizeT(is);
+	for (size_t i = 0; i < historyCount; i++) task->changeHistory.push_back(HistoryEntry::load(is, context));
+
+	return task;
 }
 
 std::string Task::typeToString(TaskType type)

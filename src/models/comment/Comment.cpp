@@ -1,5 +1,7 @@
 #include "Comment.h"
 #include "../../users/User.h"
+#include "../../app/AppData.h"
+#include "../../utils/DataStream.h"
 #include "../../exceptions/ValidationException.h"
 
 Comment::Comment(const User* author, const std::string& content, const Date& date) : author(author), content(content), creationDate(date)
@@ -27,6 +29,23 @@ const std::string& Comment::getContent() const
 const Date& Comment::getCreationDate() const
 {
 	return creationDate;
+}
+
+void Comment::save(std::ostream& os) const
+{
+	DataStream::writeString(os, author ? author->getUsername() : "");
+	DataStream::writeString(os, content);
+	DataStream::writeString(os, creationDate.toString());
+}
+
+Comment Comment::load(std::istream& is, const AppData& context)
+{
+	std::string authorName = DataStream::readString(is);
+	std::string content = DataStream::readString(is);
+	Date date = Date::parse(DataStream::readString(is));
+	
+	const User* author = context.findUser(authorName);
+	return Comment(author, content, date);
 }
 
 std::ostream& operator<<(std::ostream& os, const Comment& comment)

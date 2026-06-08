@@ -2,6 +2,8 @@
 #include "../../users/User.h"
 #include "../task/Task.h"
 #include "../stage/Stage.h"
+#include "../../app/AppData.h"
+#include "../../utils/DataStream.h"
 #include "../../exceptions/ValidationException.h"
 #include "../../exceptions/StateException.h"
 #include "../../exceptions/NotFoundException.h"
@@ -193,6 +195,62 @@ std::string Project::statusToString(ProjectStatus status)
 		default:
 			return "Unknown";
 	}
+}
+
+void Project::save(std::ostream& os) const
+{
+	DataStream::writeString(os, name);
+	DataStream::writeString(os, description);
+	DataStream::writeInt(os, static_cast<int>(status));
+
+	DataStream::writeSizeT(os, members.size());
+	for (const User* member : members)
+	{
+		DataStream::writeString(os, member->getUsername());
+	}
+
+	DataStream::writeSizeT(os, stages.size());
+	for (const auto& stage : stages)
+	{
+		stage->save(os);
+	}
+}
+
+std::unique_ptr<Project> Project::load(std::istream& is, const AppData& context, std::vector<std::pair<std::string, std::unique_ptr<Task>>>& allTasks)
+{
+	std::string name = DataStream::readString(is);
+	std::string desc = DataStream::readString(is);
+	auto project = std::make_unique<Project>(name, desc);
+	project->status = static_cast<ProjectStatus>(DataStream::readInt(is));
+
+	size_t membersCount = DataStream::readSizeT(is);
+	for (size_t i = 0; i < membersCount; i++)
+	{
+		std::string username = DataStream::readString(is);
+		User* user = context.findUser(username);
+		if (user) project->members.push_back(user);
+	}
+
+	for (auto it = allTasks.begin(); it != allTasks.end(); )
+	{
+		if (it->first == name)
+		{
+			project->tasks.push_back(std::move(it->second));
+			it = allTasks.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	size_t stagesCount = DataStream::readSizeT(is);
+	for (size_t i = 0; i < stagesCount; i++)
+	{
+		project->stages.push_back(Stage::load(is, project->tasks));
+	}
+
+	return project;
 }
 
 std::ostream& operator<<(std::ostream& os, const Project& project)
