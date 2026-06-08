@@ -38,5 +38,5 @@ void ApproveTaskCommand::execute(const std::vector<std::string>& args, AppData& 
 	}
 
 	foundTask->setApproved(true, currentUser, Date());
-	data.os() << "[System] Task " << foundTask->getFormattedId() << " has been approved.\n";
+	data.os() << "[System] Task approved.\n";
 }

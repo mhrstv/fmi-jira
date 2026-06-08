@@ -41,5 +41,5 @@ void ReviewTaskCommand::execute(const std::vector<std::string>& args, AppData& d
 	}
 
 	foundTask->setStatus(TaskStatus::InReview, currentUser, Date());
-	data.os() << "[System] Task " << foundTask->getFormattedId() << " is now InReview.\n";
+	data.os() << "[System] Task reviewed.\n";
 }

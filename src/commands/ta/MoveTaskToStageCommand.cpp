@@ -53,5 +53,5 @@ void MoveTaskToStageCommand::execute(const std::vector<std::string>& args, AppDa
 	}
 
 	targetStage->addTask(foundTask);
-	data.os() << "[System] Task " << foundTask->getFormattedId() << " moved to stage " << stageName << ".\n";
+	data.os() << "[System] Task moved to " << stageName << ".\n";
 }

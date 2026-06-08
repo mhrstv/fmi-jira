@@ -40,9 +40,22 @@ void StartStageCommand::execute(const std::vector<std::string>& args, AppData& d
 	}
 	if (!foundStage)
 	{
-		throw NotFoundException("Stage '" + stageName + "' not found in any of your projects.");
+		for (const auto& project : data.getProjects())
+		{
+			if (project->hasMember(currentUser->getUsername()) || currentUser->getRole() == Role::Administrator)
+			{
+				foundProject = project.get();
+				break;
+			}
+		}
+		if (!foundProject)
+		{
+			throw PermissionException("You are not a member of any project to create a stage in.");
+		}
+		auto newStage = std::make_unique<Stage>(stageName);
+		foundStage = foundProject->addStage(std::move(newStage));
 	}
 
 	foundStage->start(Date());
-	data.os() << "[System] Stage " << foundStage->getName() << " started in project " << foundProject->getName() << ".\n";
+	data.os() << "[System] Stage '" << foundStage->getName() << "' started.\n";
 }
