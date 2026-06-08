@@ -5,6 +5,7 @@
 #include "../models/stage/Stage.h"
 #include "../utils/DataStream.h"
 #include <fstream>
+#include <filesystem>
 #include <stdexcept>
 
 AppData::AppData() : currentUser(nullptr), running(true) { }
@@ -91,7 +92,8 @@ std::ostream& AppData::os()
 
 void AppData::save() const
 {
-	std::ofstream usersOut("users.txt");
+	std::filesystem::create_directory("data");
+	std::ofstream usersOut("data/users.txt");
 	if (usersOut.is_open())
 	{
 		DataStream::writeSizeT(usersOut, users.size());
@@ -101,7 +103,7 @@ void AppData::save() const
 		}
 	}
 
-	std::ofstream projectsOut("projects.txt");
+	std::ofstream projectsOut("data/projects.txt");
 	if (projectsOut.is_open())
 	{
 		DataStream::writeSizeT(projectsOut, projects.size());
@@ -111,7 +113,7 @@ void AppData::save() const
 		}
 	}
 
-	std::ofstream tasksOut("tasks.txt");
+	std::ofstream tasksOut("data/tasks.txt");
 	if (tasksOut.is_open())
 	{
 		size_t totalTasks = 0;
@@ -138,7 +140,7 @@ void AppData::load()
 	projects.clear();
 	currentUser = nullptr;
 
-	std::ifstream usersIn("users.txt");
+	std::ifstream usersIn("data/users.txt");
 	if (usersIn.is_open())
 	{
 		size_t usersCount = DataStream::readSizeT(usersIn);
@@ -150,7 +152,7 @@ void AppData::load()
 	}
 
 	std::vector<std::pair<std::string, std::unique_ptr<Task>>> loadedTasks;
-	std::ifstream tasksIn("tasks.txt");
+	std::ifstream tasksIn("data/tasks.txt");
 	if (tasksIn.is_open())
 	{
 		size_t tasksCount = DataStream::readSizeT(tasksIn);
@@ -162,7 +164,7 @@ void AppData::load()
 		}
 	}
 
-	std::ifstream projectsIn("projects.txt");
+	std::ifstream projectsIn("data/projects.txt");
 	if (projectsIn.is_open())
 	{
 		size_t projectsCount = DataStream::readSizeT(projectsIn);
@@ -172,3 +174,4 @@ void AppData::load()
 		}
 	}
 }
+
