@@ -23,23 +23,29 @@ std::unique_ptr<User> UserFactory::createUser(const std::string& username, const
 	}
 }
 
-Role UserFactory::parseRole(const std::string& role)
+Role UserFactory::parseRole(const std::string& roleStr)
 {
-	if (role == "Student")
+	std::string role = roleStr;
+	for (char& c : role)
+	{
+		c = std::tolower(static_cast<unsigned char>(c));
+	}
+
+	if (role == "student" || role == "s")
 	{
 		return Role::Student;
 	}
-	if (role == "TeachingAssistant")
+	if (role == "teachingassistant" || role == "ta")
 	{
 		return Role::TeachingAssistant;
 	}
-	if (role == "Lecturer")
+	if (role == "lecturer" || role == "l")
 	{
 		return Role::Lecturer;
 	}
-	if (role == "Administrator")
+	if (role == "administrator" || role == "admin" || role == "a")
 	{
 		return Role::Administrator;
 	}
-	throw ValidationException("Unknown role: " + role);
+	throw ValidationException("Unknown role: " + roleStr);
 }
